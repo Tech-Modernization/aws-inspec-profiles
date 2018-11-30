@@ -1,0 +1,10 @@
+name: aws-inspec-profiles
+title: aws-inspec-profiles
+maintainer: Contino Solutions Ltd.
+copyright: Contino Solutions Ltd.
+copyright_email: joshua.talbot@contino.io
+license: Proprietary, All rights reserved
+summary: aws-inspec-profiles
+version: 0.1.0
+supports:
+  - inspec: '~> 1.0'
