@@ -1,8 +1,8 @@
-class AwsNlb < Inspec.resource(1)
-  name 'aws_nlb'
-  desc 'Verifies settings for AWS Network Load Balancer'
+class AwsElbV2 < Inspec.resource(1)
+  name 'aws_elb_v2'
+  desc 'Verifies settings for AWS Elastic Load Balancer (v2). This only supports ALBs and NLBs.'
   example "
-    describe aws_nlb('mynlb') do
+    describe aws_elb_v2('mynlb') do
       it { should exist }
     end
   "
@@ -10,11 +10,11 @@ class AwsNlb < Inspec.resource(1)
 
   include AwsSingularResourceMixin
   attr_reader :availability_zones, :hosted_zone_id, :created_time,
-              :dns_name, :nlb_arn, :nlb_name, :scheme,
+              :dns_name, :elb_v2_arn, :elb_v2_name, :scheme,
               :security_group_ids, :subnet_ids, :state, :type, :vpc_id, :ip_type
 
   def to_s
-    "AWS NLB #{nlb_name}"
+    "AWS Elastic Load Balancer (v2): #{elb_v2_name}"
   end
 
   private
@@ -22,13 +22,13 @@ class AwsNlb < Inspec.resource(1)
   def validate_params(raw_params)
     validated_params = check_resource_param_names(
       raw_params: raw_params,
-      allowed_params: [:nlb_name],
-      allowed_scalar_name: :nlb_name,
+      allowed_params: [:elb_v2_name],
+      allowed_scalar_name: :elb_v2_name,
       allowed_scalar_type: String,
     )
 
     if validated_params.empty?
-      raise ArgumentError, 'You must provide a nlb_name to aws_nlb.'
+      raise ArgumentError, 'You must provide a elb_v2_name to aws_elb_v2.'
     end
 
     validated_params
@@ -37,7 +37,7 @@ class AwsNlb < Inspec.resource(1)
   def fetch_from_api
     backend = BackendFactory.create(inspec_runner)
     begin
-      lbs = backend.describe_load_balancers(names: [nlb_name]).load_balancers
+      lbs = backend.describe_load_balancers(names: [elb_v2_name]).load_balancers
       @exists = true
       # Load balancer names are unique; we will either have 0 or 1 result
       unpack_describe_nlbs_response(lbs.first)
@@ -53,8 +53,8 @@ class AwsNlb < Inspec.resource(1)
     @hosted_zone_id = lb_struct.canonical_hosted_zone_id
     @created_time = lb_struct.created_time
     @dns_name = lb_struct.dns_name
-    @nlb_arn = lb_struct.load_balancer_arn
-    @nlb_name = lb_struct.load_balancer_name
+    @elb_v2_arn = lb_struct.load_balancer_arn
+    @elb_v2_name = lb_struct.load_balancer_name
     @scheme = lb_struct.scheme
     @security_group_ids = lb_struct.security_groups
     @state = lb_struct.state.code
